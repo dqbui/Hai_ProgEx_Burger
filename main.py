@@ -40,7 +40,7 @@ def display_catalogue(catalogue):
 
 
 async def main():
-    pass
+    print('you are running the program')
 
 if __name__ == "__main__":
     asyncio.run(main())
