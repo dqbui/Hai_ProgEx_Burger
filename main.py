@@ -1,6 +1,6 @@
 import asyncio
 from inventory import Inventory
-from time import sleep
+# from time import sleep
 
 
 def display_catalogue(catalogue):
@@ -45,7 +45,7 @@ async def main():
     new_inventory = Inventory()
     print('Welcome to the ProgrammingExpert Burger Bar!')
     print('Loading catalogue...')
-    display_catalogue(new_inventory.catalogue)
+    display_catalogue(await new_inventory.get_catalogue())
 
     while True:
         answer = input('Would you like to place an order? ')
@@ -56,7 +56,7 @@ async def main():
             # print('Program terminating in 5 seconds...')
             # for _ in range(5):
             #     print('.')
-            #     sleep(1)
+            #     await asyncio.sleep(1)
             break
 
 
