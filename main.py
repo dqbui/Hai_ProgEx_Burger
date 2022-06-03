@@ -95,6 +95,10 @@ async def main():
 
             # create combo
             print(f'The order so far: {final_order}')
+
+            # boogey final order for debugging
+            final_order = [1, 2, 3, 9, 10, 12, 17, 18, 19]
+
             burgers_list = []
             sides_list = []
             drinks_list = []
@@ -107,9 +111,45 @@ async def main():
                 elif new_inventory.items[item_id]['category'] == 'Drinks':
                     drinks_list.append(item_id)
 
-            print('Burgers:', burgers_list)
-            print('Sides:', sides_list)
-            print('Drinks:', drinks_list)
+            print('Burgers init:', burgers_list)
+            print('Sides init:', sides_list)
+            print('Drinks init:', drinks_list)
+
+            burgers_list.sort(
+                key=lambda item_id: new_inventory.items[item_id]['price'])
+
+            sides_list.sort(
+                key=lambda item_id: new_inventory.items[item_id]['price'])
+
+            drinks_list.sort(
+                key=lambda item_id: new_inventory.items[item_id]['price'])
+
+            print('Burgers sorted:', burgers_list)
+            print('Sides sorted:', sides_list)
+            print('Drinks sorted:', drinks_list)
+
+            combo_count = min(len(burgers_list),
+                              len(sides_list),
+                              len(drinks_list))
+
+            order_summary = []
+
+            # first add combo as lists
+            for combo in range(combo_count):
+                combo_burger = burgers_list.pop()
+                combo_side = sides_list.pop()
+                combo_drink = drinks_list.pop()
+
+                combo = [combo_burger, combo_side, combo_drink]
+                print('Combo', combo)
+                order_summary.append(combo)
+
+            # add remaining as individual items
+            order_summary.extend(burgers_list)
+            order_summary.extend(sides_list)
+            order_summary.extend(drinks_list)
+
+            print(order_summary)
 
             # calculate net price, total price
 

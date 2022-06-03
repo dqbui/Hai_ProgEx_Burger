@@ -2,9 +2,9 @@ from inventory import Inventory
 import asyncio
 
 
-new_inventory = Inventory()
+# new_inventory = Inventory()
 
-print(new_inventory.items)
+# print(new_inventory.items)
 
 
 # ID_list = list(new_inventory.stock.keys())
@@ -57,3 +57,11 @@ print(new_inventory.items)
 
 
 # asyncio.run(main())
+
+
+list1 = [1, 2, 3]
+list2 = []
+
+list1.extend(list1)
+
+print(list1)
