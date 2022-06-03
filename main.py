@@ -1,4 +1,5 @@
 import asyncio
+from unicodedata import category
 from inventory import Inventory
 # from time import sleep
 
@@ -49,8 +50,71 @@ async def main():
 
     while True:
         answer = input('Would you like to place an order? ')
-        if answer.lower() in POSSIBLE_YES_ANSWER:
-            print('Taking order...')
+        if answer.lower() in POSSIBLE_YES_ANSWER:  # repeat indefinitely until the customer says no
+            # print('Taking order...')
+            print('List of item IDs:', list(new_inventory.stock.keys()))
+            print('Please enter the number of items that you would like to add to your order. Enter q to complete your order.')
+            order_list = []
+            while True:  # validates customer input is within catalog keys
+                order_item = input('Enter an item number: ')
+                if order_item.lower() == 'q':
+                    break
+                else:
+                    try:
+                        order_item = int(order_item)
+                        if order_item not in new_inventory.stock.keys():
+                            print('Please enter a valid choice!!!')
+
+                        else:
+                            order_list.append(order_item)
+                    except ValueError:
+                        print('Please enter a valide choice!!!')
+
+            # print(f'Final list of order: {order_list}')
+            print(f'Total item count: {len(order_list)}')
+            print('Placing order...')
+
+            # attempt to decrement stock; if successful, add to final order; if unsuccessful, remove item from order
+            task_list = []
+            for item in order_list:
+                new_task = new_inventory.decrement_stock(item)
+                task_list.append(new_task)
+
+            item_status = await asyncio.gather(*task_list)
+
+            final_order = []
+
+            for idx, avail_bool in enumerate(item_status):
+                if avail_bool == True:
+                    print('Item added successfully!')
+                    final_order.append(order_list[idx])
+
+                else:
+                    print(
+                        f'Unfortunately item number {order_list[idx]} is out of stock and has been removed from your order. Sorry!')
+
+            # create combo
+            print(f'The order so far: {final_order}')
+            burgers_list = []
+            sides_list = []
+            drinks_list = []
+
+            for item_id in final_order:
+                if new_inventory.items[item_id]['category'] == 'Burgers':
+                    burgers_list.append(item_id)
+                elif new_inventory.items[item_id]['category'] == 'Sides':
+                    sides_list.append(item_id)
+                elif new_inventory.items[item_id]['category'] == 'Drinks':
+                    drinks_list.append(item_id)
+
+            print('Burgers:', burgers_list)
+            print('Sides:', sides_list)
+            print('Drinks:', drinks_list)
+
+            # calculate net price, total price
+
+            # display order details and get final comfirmation
+
         else:
             print('Okay! Have a nice day!')
             # print('Program terminating in 5 seconds...')
