@@ -42,14 +42,52 @@ def display_catalogue(catalogue):
 
 
 async def main():
+    def get_item_name(item_id):
+        item_category = new_inventory.items[item_id]['category']
+        if item_category == 'Burgers':
+            return new_inventory.items[item_id]['name']
+
+        else:
+            item_name = new_inventory.items[item_id]['size'] + \
+                ' ' + new_inventory.items[item_id]['subcategory']
+            return item_name
+
     def get_order_price(order):  # calculate price of summarized order
-        print('Calculating order total price')
+        print('Here is a summary of your order:')
+        print()
+        total_price = 0
         for item in order:
             if isinstance(item, list):
-                print(f'Found a combo:{item}')
+                # price_holder = new_inventory.items[item]
+                # print(f'Found a combo:{item}')
+                burger_id, sides_id, drinks_id = item
+                burger_price = new_inventory.items[burger_id]['price']
+                sides_price = new_inventory.items[sides_id]['price']
+                drinks_price = new_inventory.items[drinks_id]['price']
+
+                burger_name = get_item_name(burger_id)
+                sides_name = get_item_name(sides_id)
+                drinks_name = get_item_name(drinks_id)
+
+                combo_price = (burger_price + sides_price +
+                               drinks_price) * 0.85
+                total_price += combo_price
+
+                print(f'${combo_price:.2f} Burger combo')
+                print(f'\t {burger_name}')
+                print(f'\t {sides_name}')
+                print(f'\t {drinks_name}')
+                print()
+
             else:
-                print('Found single item')
-        return 5
+                # print(f'Found single item with ID {item}')
+                price_single_item = new_inventory.items[item]['price']
+                total_price += price_single_item
+
+                item_name = get_item_name(item)
+                print(f'${price_single_item:.2f} \t {item_name}')
+        print()
+        return total_price
 
     POSSIBLE_YES_ANSWER = ['yes', 'y', 'ok', 'sure']
     new_inventory = Inventory()
@@ -61,7 +99,7 @@ async def main():
         answer = input('Would you like to place an order? ')
         if answer.lower() in POSSIBLE_YES_ANSWER:  # repeat indefinitely until the customer says no
             # print('Taking order...')
-            print('List of item IDs:', list(new_inventory.stock.keys()))
+            # print('List of item IDs:', list(new_inventory.stock.keys()))
             print('Please enter the number of items that you would like to add to your order. Enter q to complete your order.')
             order_list = []
             while True:  # validates customer input is within catalog keys
@@ -95,7 +133,7 @@ async def main():
 
             for idx, avail_bool in enumerate(item_status):
                 if avail_bool == True:
-                    print('Item added successfully!')
+                    # print('Item added successfully!')
                     final_order.append(order_list[idx])
 
                 else:
@@ -103,10 +141,10 @@ async def main():
                         f'Unfortunately item number {order_list[idx]} is out of stock and has been removed from your order. Sorry!')
 
             # create combo
-            print(f'The order so far: {final_order}')
+            # print(f'The order so far: {final_order}')
 
-            # boogey final order for debugging
-            final_order = [1, 2, 3, 9, 10, 12, 17, 18, 19]
+            #     # boogey final order for debugging
+            # final_order = [1, 2, 3, 9, 10, 12, 17, 18, 19]
 
             burgers_list = []
             sides_list = []
@@ -120,10 +158,6 @@ async def main():
                 elif new_inventory.items[item_id]['category'] == 'Drinks':
                     drinks_list.append(item_id)
 
-            print('Burgers init:', burgers_list)
-            print('Sides init:', sides_list)
-            print('Drinks init:', drinks_list)
-
             burgers_list.sort(
                 key=lambda item_id: new_inventory.items[item_id]['price'])
 
@@ -132,10 +166,6 @@ async def main():
 
             drinks_list.sort(
                 key=lambda item_id: new_inventory.items[item_id]['price'])
-
-            print('Burgers sorted:', burgers_list)
-            print('Sides sorted:', sides_list)
-            print('Drinks sorted:', drinks_list)
 
             combo_count = min(len(burgers_list),
                               len(sides_list),
@@ -150,7 +180,7 @@ async def main():
                 combo_drink = drinks_list.pop()
 
                 combo = [combo_burger, combo_side, combo_drink]
-                print('Combo', combo)
+                # print('Combo', combo)
                 order_summary.append(combo)
 
             # add remaining as individual items
@@ -158,16 +188,31 @@ async def main():
             order_summary.extend(sides_list)
             order_summary.extend(drinks_list)
 
-            print(order_summary)
+            # print(order_summary)
 
-            # calculate net price, total price
-            total = get_order_price(order_summary)
-            print(f'The total is {total}')
+            # calculate sub total, tax, and total price
+            sub_total = get_order_price(order_summary)
+            tax = sub_total * 0.05
+            order_total_price = sub_total + tax
 
             # display order details and get final comfirmation
+            print(f'Subtotal: ${sub_total:.2f}')
+            print(f'Tax: ${tax:.2f}')
+            print(f'Total: ${order_total_price:.2f}')
+
+            confirmation_answer = input(
+                f'Would you like to purchase this order for ${order_total_price:.2f}? ')
+
+            if confirmation_answer.lower() in POSSIBLE_YES_ANSWER:
+                print('Thank you for your order!')
+            else:
+                print('No problem! Please come again!')
 
         else:
             print('Okay! Have a nice day!')
+
+            # uncomment these next line if need to create exe file
+
             # print('Program terminating in 5 seconds...')
             # for _ in range(5):
             #     print('.')
