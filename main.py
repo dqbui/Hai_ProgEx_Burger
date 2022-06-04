@@ -42,6 +42,15 @@ def display_catalogue(catalogue):
 
 
 async def main():
+    def get_order_price(order):  # calculate price of summarized order
+        print('Calculating order total price')
+        for item in order:
+            if isinstance(item, list):
+                print(f'Found a combo:{item}')
+            else:
+                print('Found single item')
+        return 5
+
     POSSIBLE_YES_ANSWER = ['yes', 'y', 'ok', 'sure']
     new_inventory = Inventory()
     print('Welcome to the ProgrammingExpert Burger Bar!')
@@ -152,6 +161,8 @@ async def main():
             print(order_summary)
 
             # calculate net price, total price
+            total = get_order_price(order_summary)
+            print(f'The total is {total}')
 
             # display order details and get final comfirmation
 
